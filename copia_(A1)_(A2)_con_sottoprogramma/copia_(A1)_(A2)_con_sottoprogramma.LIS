@@ -1,0 +1,32 @@
+00008000                                     1  		ORG				$8000
+00008000  2F3C 00008100                      2  MAIN		MOVE.L #VET1,-(SP)
+00008006  2F3C 00008108                      3  		MOVE.L #VET2,-(SP)
+0000800C  3F3C 0004                          4  		MOVE.W #N,-(SP)
+00008010  4EB9 0000801C                      5  		JSR				VET
+00008016                                     6  		
+00008016  DEFC 000A                          7  		ADDA	#10,SP
+0000801A  4E75                               8  		RTS
+0000801C                                     9  
+0000801C  226F 000A                         10  VET		MOVEA.L 10(SP),A1
+00008020  246F 0006                         11  		MOVEA.L 6(SP),A2
+00008024  302F 0004                         12  		MOVE.W 4(SP),D0
+00008028  323C 0000                         13  		MOVE.W #0,D1
+0000802C                                    14  
+0000802C  B041                              15  FOR		CMP.W D1,D0
+0000802E  6700 0014                         16  		BEQ 				FINE
+00008032  3491                              17  		MOVE.W (A1),(A2)
+00008034  D2FC 0002                         18  		ADDA #2,A1
+00008038  D4FC 0002                         19  		ADDA #2,A2
+0000803C  5241                              20  		ADD.W #1,D1
+0000803E  4EF9 0000802C                     21  		JMP				FOR
+00008044                                    22  
+00008044  4E75                              23  FINE		RTS
+00008046                                    24  
+00008100                                    25  		ORG				$8100
+00008100  0004 0007 0015 0026               26  VET1		DC.W				4,7,21,38
+00008108                                    27  VET2		DS.W				4
+00008110  =00000004                         28  N		EQU				4
+00008110                                    29  		END				MAIN
+
+No errors detected
+No warnings generated

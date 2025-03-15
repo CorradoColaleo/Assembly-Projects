@@ -1,0 +1,29 @@
+		ORG				$8000
+MAIN		MOVE.L #VET1,-(SP)
+		MOVE.L #VET2,-(SP)
+		MOVE.W #N,-(SP)
+		JSR				VET
+		
+		ADDA	#10,SP
+		RTS
+
+VET		MOVEA.L 10(SP),A1
+		MOVEA.L 6(SP),A2
+		MOVE.W 4(SP),D0
+		MOVE.W #0,D1
+
+FOR		CMP.W D1,D0
+		BEQ 				FINE
+		MOVE.W (A1),(A2)
+		ADDA #2,A1
+		ADDA #2,A2
+		ADD.W #1,D1
+		JMP				FOR
+
+FINE		RTS
+
+		ORG				$8100
+VET1		DC.W				4,7,21,38
+VET2		DS.W				4
+N		EQU				4
+		END				MAIN

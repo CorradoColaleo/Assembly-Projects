@@ -1,0 +1,103 @@
+Copia di un Vettore in Assembly 68000
+
+📌 Descrizione del Programma
+Questo programma in Assembly per il processore Motorola 68000 copia gli elementi di un vettore di interi (VET1) in un altro vettore (VET2) utilizzando una subroutine (VET).
+
+L'interazione tra il programma principale e la subroutine avviene tramite lo stack, che viene utilizzato per passare i parametri.
+
+📌 Struttura del Codice
+Il codice è diviso in tre sezioni principali:
+
+Dichiarazione della memoria dati (indirizzo $8100):
+
+VET1 contiene 4 numeri predefiniti.
+VET2 è lo spazio riservato per la copia dei dati.
+N è una costante che rappresenta la lunghezza del vettore.
+Programma principale (MAIN):
+
+Passa gli indirizzi di VET1 e VET2 e il valore di N alla subroutine.
+Chiama la subroutine VET per eseguire la copia.
+Ripulisce lo stack e termina l'esecuzione.
+Subroutine (VET):
+
+Recupera i parametri dallo stack.
+Esegue un ciclo per copiare ogni elemento da VET1 a VET2.
+Ritorna al chiamante.
+
+📌 Dettaglio delle Istruzioni
+
+1️⃣ Dichiarazione della Memoria
+        ORG     $8100
+VET1    DC.W    4,7,21,38      ; Vettore di partenza con 4 elementi
+VET2    DS.W    4              ; Vettore destinazione (spazio per 4 elementi)
+N       EQU     4              ; Numero di elementi nel vettore
+VET1 contiene 4 numeri (4, 7, 21, 38).
+VET2 è dichiarato con DS.W 4, quindi ha spazio per 4 numeri ma inizialmente è vuoto.
+N è una costante con valore 4.
+
+2️⃣ Programma Principale (MAIN)
+
+        ORG     $8000
+MAIN:
+        MOVE.L  #VET1, -(SP)   ; Inserisce l'indirizzo di VET1 nello stack
+        MOVE.L  #VET2, -(SP)   ; Inserisce l'indirizzo di VET2 nello stack
+        MOVE.W  #N, -(SP)      ; Inserisce il valore di N nello stack
+        JSR     VET            ; Chiama la subroutine di copia
+
+        ADDA    #10, SP        ; Ripulisce lo stack (10 byte: 4+4+2)
+        RTS                    ; Ritorno al sistema
+Spiegazione:
+1. Inserisce nello stack:
+    -   Indirizzo di VET1 (4 byte)
+    -   Indirizzo di VET2 (4 byte)
+    -   Numero di elementi N (2 byte)
+2. Chiama la subroutine VET per eseguire la copia.
+3. Ripulisce lo stack dopo il ritorno (10 byte perché 4+4+2=10).
+4. Termina l'esecuzione con RTS.
+
+3️⃣ Subroutine di Copia (VET)
+VET:
+        MOVEA.L 10(SP), A1     ; Carica l'indirizzo di VET1 in A1
+        MOVEA.L 6(SP), A2      ; Carica l'indirizzo di VET2 in A2
+        MOVE.W  4(SP), D0      ; Carica il numero di elementi (N) in D0
+        MOVE.W  #0, D1         ; Inizializza il contatore i = 0
+
+FOR:
+        CMP.W   D1, D0         ; Confronta i con N
+        BEQ     FINE           ; Se i == N, termina il ciclo
+        MOVE.W  (A1), (A2)     ; Copia il valore puntato da A1 a A2
+        ADDA    #2, A1         ; Sposta A1 al prossimo elemento (word = 2 byte)
+        ADDA    #2, A2         ; Sposta A2 al prossimo elemento (word = 2 byte)
+        ADD.W   #1, D1         ; Incrementa i
+        JMP     FOR            ; Ripete il ciclo
+
+FINE:
+        RTS                    ; Ritorna al chiamante
+
+Spiegazione:
+
+1.  Recupera i parametri dallo stack:
+    -   A1 ← Indirizzo di VET1
+    -   A2 ← Indirizzo di VET2
+    -   D0 ← Numero di elementi N
+2.  Inizializza il contatore D1 a 0.
+3.  Ciclo FOR:
+    -   Se D1 == N, esce dal ciclo.
+    -   Copia un valore da VET1 a VET2.
+    -   Avanza i puntatori (A1 e A2).
+    -   Incrementa D1 e ripete.
+4.  Ritorna al chiamante con RTS.
+
+📌 Gestione dello Stack
+
+Durante l'esecuzione di VET, lo stack appare così:
+Indirizzo	Contenuto dello Stack
+(SP) →	Return Address (JSR)
+(SP+2) →	N = 4
+(SP+6) →	Indirizzo di VET2
+(SP+10) →	Indirizzo di VET1
+MOVEA.L 10(SP), A1 carica VET1.
+MOVEA.L 6(SP), A2 carica VET2.
+MOVE.W 4(SP), D0 carica N.
+Dopo RTS, MAIN pulisce lo stack con ADDA #10, SP.
+
