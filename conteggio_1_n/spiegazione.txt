@@ -1,0 +1,23 @@
+        ORG     $8000
+MAIN:
+        MOVE.W  N, D0       ; Carica il valore di N in D0
+        CLR.W   D1          ; Inizializza D1 (somma = 0)
+
+LOOP:
+        CMP.W   #0, D0      ; Controlla se D0 è 0
+        BEQ     ENDOFLOOP   ; Se sì, termina il ciclo
+        ADD.W   D0, D1      ; Aggiunge D0 alla somma totale
+        SUBQ.W  #1, D0      ; Decrementa D0
+        BRA     LOOP        ; Ripete il ciclo finché D0 > 0
+
+ENDOFLOOP:
+        MOVE.W  D1, RES     ; Salva il risultato in RES
+
+FINE:
+        BRA     FINE        ; Ferma l'esecuzione in un loop infinito
+
+        ORG     $8100
+N       DC.W    5           ; Numero da sommare (esempio: N=5)
+RES     DS.W    1           ; Spazio riservato per il risultato
+
+        END
