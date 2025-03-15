@@ -1,0 +1,17 @@
+				ORG								$8000
+MAIN				MOVEA.L #$8100,A0
+				MOVEA.L #$8110,A1
+				MOVE.W N,D0
+				MOVE.W #0,D1
+LOOP				CMP.W D1,D0
+				BEQ 								FUORI
+				MOVE.W (A0),(A1)
+				ADDA #2,A0
+				ADDA #2,A1
+				ADD.W #1,D1
+				BRA								LOOP
+FUORI				BRA								FUORI
+
+				ORG								$8100
+N				DC.W								4
+				END								MAIN

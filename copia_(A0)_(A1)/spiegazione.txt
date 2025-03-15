@@ -1,0 +1,49 @@
+README - Copia di un Vettore in Assembly 68000
+Descrizione
+Questo programma in Assembly 68000 copia un vettore di numeri N dalla memoria di origine (A0) alla memoria di destinazione (A1). Utilizza un ciclo per copiare N valori word (16 bit) uno alla volta.
+
+Funzionamento del codice
+Inizializzazione
+
+Il registro A0 viene inizializzato con l'indirizzo di partenza del vettore sorgente ($8100).
+Il registro A1 viene inizializzato con l'indirizzo di partenza del vettore destinazione ($8110).
+Il valore N (numero di elementi da copiare) viene caricato nel registro D0.
+Il contatore D1 viene azzerato per iterare sul vettore.
+Ciclo di copia (LOOP)
+
+Confronta D1 con D0 per verificare se tutti gli elementi sono stati copiati (CMP.W D1, D0).
+Se D1 == D0, esce dal ciclo (BEQ FUORI).
+Altrimenti, copia il valore da (A0) a (A1) (MOVE.W (A0), (A1)).
+Incrementa i puntatori A0 e A1 di 2 byte (ADDA #2, A0 e ADDA #2, A1).
+Incrementa il contatore D1 (ADD.W #1, D1) e ripete il ciclo (BRA LOOP).
+Terminazione
+
+Quando tutti gli elementi sono copiati, il programma entra in un loop infinito (BRA FUORI), impedendo ulteriori operazioni.
+Codice con spiegazione riga per riga
+assembly
+Copia
+Modifica
+        ORG     $8000          ; Indirizzo iniziale del codice
+MAIN:   MOVEA.L #$8100, A0    ; A0 = puntatore alla sorgente
+        MOVEA.L #$8110, A1    ; A1 = puntatore alla destinazione
+        MOVE.W  N, D0         ; D0 = numero di elementi da copiare
+        MOVE.W  #0, D1        ; Inizializza il contatore a 0
+
+LOOP:   CMP.W   D1, D0        ; Controlla se tutti gli elementi sono stati copiati
+        BEQ     FUORI         ; Se D1 == D0, esce dal ciclo
+        MOVE.W  (A0), (A1)    ; Copia word da (A0) a (A1)
+        ADDA    #2, A0        ; Avanza il puntatore sorgente di 2 byte
+        ADDA    #2, A1        ; Avanza il puntatore destinazione di 2 byte
+        ADD.W   #1, D1        ; i++
+        BRA     LOOP          ; Ripeti ciclo
+
+FUORI:  BRA     FUORI         ; Loop infinito dopo la copia
+
+        ORG     $8100
+N:      DC.W    4             ; Numero di elementi da copiare
+        END     MAIN
+💡 Note importanti
+CMP.W D1, D0 e BEQ FUORI: garantisce che il ciclo termini esattamente dopo N iterazioni.
+MOVE.W (A0), (A1): copia un dato da A0 (sorgente) a A1 (destinazione).
+ADDA #2, A0 e ADDA #2, A1: avanzano i puntatori di 2 byte, perché ogni word è di 16 bit (2 byte).
+BRA FUORI: mantiene il programma bloccato dopo l'esecuzione.

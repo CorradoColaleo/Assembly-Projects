@@ -1,0 +1,20 @@
+00008000                                     1  				ORG								$8000
+00008000  207C 00008100                      2  MAIN				MOVEA.L #$8100,A0
+00008006  227C 00008110                      3  				MOVEA.L #$8110,A1
+0000800C  3039 00008100                      4  				MOVE.W N,D0
+00008012  323C 0000                          5  				MOVE.W #0,D1
+00008016  B041                               6  LOOP				CMP.W D1,D0
+00008018  6700 0010                          7  				BEQ 								FUORI
+0000801C  3290                               8  				MOVE.W (A0),(A1)
+0000801E  D0FC 0002                          9  				ADDA #2,A0
+00008022  D2FC 0002                         10  				ADDA #2,A1
+00008026  5241                              11  				ADD.W #1,D1
+00008028  60EC                              12  				BRA								LOOP
+0000802A  60FE                              13  FUORI				BRA								FUORI
+0000802C                                    14  
+00008100                                    15  				ORG								$8100
+00008100  0004                              16  N				DC.W								4
+00008102                                    17  				END								MAIN
+
+No errors detected
+No warnings generated
