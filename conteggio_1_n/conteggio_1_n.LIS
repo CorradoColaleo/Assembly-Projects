@@ -1,0 +1,20 @@
+00000000                                     1  *Data una variabile in memoria N, dommare i primi numeri interi da 1 a N e scrivere il risultato in memoria*
+00000000                                     2  
+00008000                                     3  		ORG			$8000
+00008000  3039 00008100                      4  MAIN		MOVE.W N,D0
+00008006  4241                               5  		CLR.W			D1
+00008008  B07C 0000                          6  LOOP		CMP.W #0,D0
+0000800C  6700 0008                          7  		BEQ			ENDOFLOOP
+00008010  5241                               8  		ADD.W	#1,D1
+00008012  5340                               9  		SUBQ.W #1,D0
+00008014  60F2                              10  		BRA			LOOP
+00008016  33C1 00008102                     11  ENDOFLOOP	MOVE.W D1,RES
+0000801C  60FE                              12  FINE		BRA			FINE
+0000801E                                    13  
+00008100                                    14  		ORG 			$8100
+00008100  0005                              15  N		DC.W			5
+00008102                                    16  RES		DS.W			1
+00008104                                    17  		END			MAIN
+
+No errors detected
+No warnings generated
