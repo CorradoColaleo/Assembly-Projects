@@ -1,0 +1,28 @@
+            ORG             $8000       ; Indirizzo di inizio del codice
+MAIN        MOVE.B WORD,D0              ; Carica il byte alto della parola WORD in D0
+            JSR             COUNT1B     ; Chiama la subroutine per contare i bit a 1
+            MOVE.W D1,N1WORD            ; Memorizza il risultato parziale in N1WORD
+            MOVE.B WORD+1,D0            ; Carica il byte basso della parola WORD in D0
+            JSR             COUNT1B     ; Conta i bit a 1 del secondo byte
+            ADD.W   D1,N1WORD           ; Somma il risultato ottenuto al valore in N1WORD
+
+LOOP        JMP             LOOP        ; Loop infinito per fermare l'esecuzione
+
+COUNT1B     MOVE.W #0,D1                ; Inizializza il contatore di bit a 1 in D1
+            MOVE.B #$1,D2               ; Inizializza la maschera a 1 in D2
+
+LOOPM       MOVE.B D2,D3                ; Copia la maschera D2 in D3
+            AND.B D0,D3                 ; Esegue un AND tra D0 e la maschera
+            CMP.B  #0,D3                ; Controlla se il bit corrente è 1
+            BEQ             SKIP_INCR   ; Se il risultato è 0, salta l'incremento
+            ADD.W #1,D1                 ; Incrementa il contatore di bit a 1
+
+SKIP_INCR   ASL.B   #1,D2               ; Sposta la maschera a sinistra per controllare il bit successivo
+            CMP.B #0,D2                 ; Controlla se sono stati analizzati tutti i bit
+            BNE             LOOPM       ; Se ci sono ancora bit da controllare, ripeti il ciclo
+            RTS                         ; Ritorna alla routine principale
+
+            ORG             $9000  ; Indirizzo di inizio della memoria dati
+WORD        DC.W            $1F64  ; Definisce la parola da analizzare (binario: 0001 1111 0110 0100)
+N1WORD      DS.W            1      ; Riserva uno spazio word per memorizzare il numero di bit a 1
+            END             MAIN   ; Fine del programma

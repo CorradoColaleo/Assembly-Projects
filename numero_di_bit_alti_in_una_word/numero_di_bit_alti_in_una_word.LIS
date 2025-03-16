@@ -1,0 +1,32 @@
+00008000                                     1  			ORG				$8000
+00008000  1039 00009000                      2  MAIN			MOVE.B WORD,D0
+00008006  4EB9 0000802A                      3  			JSR				COUNT1B
+0000800C  33C1 00009002                      4  			MOVE.W D1,N1WORD
+00008012  1039 00009001                      5  			MOVE.B WORD+1,D0
+00008018  4EB9 0000802A                      6  			JSR				COUNT1B
+0000801E  D379 00009002                      7  			ADD.W	D1,N1WORD		
+00008024                                     8  
+00008024  4EF9 00008024                      9  LOOP			JMP				LOOP
+0000802A                                    10  			
+0000802A  323C 0000                         11  COUNT1B		MOVE.W #0,D1
+0000802E  143C 0001                         12  			MOVE.B #$1,D2
+00008032                                    13  			
+00008032  1602                              14  LOOPM		MOVE.B D2,D3
+00008034  C600                              15  			AND.B D0,D3
+00008036  B63C 0000                         16  			CMP.B	#0,D3
+0000803A  6700 0004                         17  			BEQ				SKIP_INCR
+0000803E  5241                              18  			ADD.W #1,D1
+00008040                                    19  
+00008040  E302                              20  SKIP_INCR		ASL.B	#1,D2
+00008042  B43C 0000                         21  			CMP.B #0,D2
+00008046  66EA                              22  			BNE				LOOPM
+00008048  4E75                              23  			RTS
+0000804A                                    24  			
+0000804A                                    25  
+00009000                                    26  			ORG				$9000
+00009000  1F64                              27  WORD			DC.W				$1F64 
+00009002                                    28  N1WORD		DS.W				1
+00009004                                    29  			END				MAIN
+
+No errors detected
+No warnings generated

@@ -1,0 +1,30 @@
+			ORG				$8000
+MAIN			MOVE.B WORD,D0
+			JSR				COUNT1B
+			MOVE.W D1,N1WORD
+			MOVE.B WORD+1,D0
+			JSR				COUNT1B
+			ADD.W	D1,N1WORD		
+
+LOOP			JMP				LOOP
+			
+COUNT1B		MOVE.W #0,D1
+			MOVE.B #$1,D2
+			
+LOOPM		MOVE.B D2,D3
+			AND.B D0,D3
+			CMP.B	#0,D3
+			BEQ				SKIP_INCR
+			ADD.W #1,D1
+
+SKIP_INCR		ASL.B	#1,D2
+			CMP.B #0,D2
+			BNE				LOOPM
+			RTS
+			
+
+			ORG				$9000
+WORD			DC.W				$1F64 
+N1WORD		DS.W				1
+			END				MAIN
+

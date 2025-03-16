@@ -1,0 +1,1 @@
+*Numero di bit alti in una word*
