@@ -1,0 +1,82 @@
+1️⃣ Inizializzazione e prima chiamata alla subroutine COUNTBIT
+All'inizio, il programma imposta il registro A0 per puntare alla variabile WORD, che contiene un valore a 16 bit.
+
+Azzera i registri D2 e D3
+
+D2 e D3 vengono usati nella subroutine per contare i bit.
+Allinea lo stack per evitare errori di accesso dispari
+
+ADDA.L #-2,A7 sposta lo stack pointer (A7) di due byte verso il basso, creando spazio nello stack.
+MOVE.B #0,-(A7) mette un byte vuoto nello stack per evitare problemi di allineamento con dati a 16 bit.
+Caricamento del valore da elaborare
+
+Il primo byte di WORD viene prelevato da A0 e salvato nello stack con MOVE.B (A0)+,-(A7).
+A questo punto, lo stack contiene un byte del valore WORD.
+Chiamata alla funzione COUNTBIT
+
+La funzione COUNTBIT viene chiamata per contare i bit a 1 nel byte salvato nello stack.
+Recupero del risultato
+
+Dopo il ritorno dalla subroutine, lo stack viene ripulito (ADDQ #2, A7).
+Il valore di RIS viene aggiornato con il risultato (MOVE.W (A7)+, RIS).
+2️⃣ Seconda chiamata alla subroutine COUNTBIT
+Dopo aver elaborato il primo byte di WORD, il programma esegue lo stesso procedimento per il secondo byte:
+
+Azzera di nuovo D2 e D3
+
+Questo è necessario perché D3 viene usato per accumulare il conteggio dei bit.
+Ripete la procedura per il secondo byte
+
+Come prima, viene prelevato un byte di WORD e passato alla subroutine COUNTBIT.
+Somma i risultati
+
+Dopo il ritorno dalla funzione, il valore ottenuto viene salvato in D4.
+ADD.W D4, RIS somma i due conteggi di bit ottenuti.
+A questo punto, RIS contiene il numero totale di bit a 1 presenti nei due byte di WORD.
+
+3️⃣ Loop infinito
+Dopo aver eseguito tutte le operazioni, il programma entra in un loop infinito (JMP LOOP).
+Questo impedisce al programma di terminare, mantenendo il valore finale in memoria per eventuali letture successive.
+
+4️⃣ Subroutine COUNTBIT
+La funzione COUNTBIT si occupa di contare quanti bit a 1 ci sono in un byte.
+
+Setup della funzione
+
+LINK A6,#0 crea un frame di stack, rendendo più semplice l'accesso ai parametri passati.
+Prepara il valore di input
+
+MOVE.B OFF_VAL(A6),D0 preleva il valore da elaborare.
+CLR D1 e MOVE.B #1,D1 inizializzano D1 a 1. Questo valore verrà utilizzato come maschera di bit.
+Ciclo di conteggio dei bit
+
+FOR è un ciclo che scorre ogni bit del byte.
+Ogni volta, D1 viene spostato a sinistra (ASL.B #1,D1), in modo da verificare progressivamente ogni bit.
+Se il bit corrente è 1 (AND.B D0,D2), allora D3 viene incrementato.
+Salvataggio del risultato
+
+Alla fine del ciclo, il conteggio viene memorizzato nella variabile OFF_RIS(A6).
+UNLK A6 ripristina lo stack frame.
+RTS restituisce il controllo al programma principale.
+5️⃣ Memoria e Dati
+La memoria contiene i seguenti elementi:
+
+WORD
+
+È la variabile contenente il numero di cui vogliamo contare i bit.
+Il valore iniziale è $F21C, che in binario è:
+1111 0010 0001 1100
+Quindi ha 9 bit a 1.
+RIS
+
+È un'area di memoria destinata a contenere il risultato.
+Offset di accesso ai dati nella funzione
+
+OFF_VAL = 8 → Offset per recuperare il valore.
+OFF_RIS = 10 → Offset per memorizzare il risultato.
+
+6️⃣ Riassunto del funzionamento
+Il programma carica WORD e divide il suo valore in due byte.
+Ogni byte viene passato alla subroutine COUNTBIT, che conta quanti bit a 1 contiene.
+I due risultati vengono sommati e salvati in RIS.
+Il programma entra in un loop infinito, bloccandosi dopo l'elaborazione

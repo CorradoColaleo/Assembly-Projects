@@ -1,0 +1,126 @@
+00000000                                     1  ************************ AREA CODICE ******************************
+00000000                                     2  
+00008000                                     3  			ORG 			$8000
+00008000                                     4  
+00008000                                     5  MAIN			
+00008000                                     6  
+00008000                                     7  ************************ TROVO MASSIMO ******************************
+00008000                                     8  
+00008000  41F9 00009000                      9  			LEA.L MATRICE,A0
+00008006  DFFC FFFFFFFE                     10  			ADDA.L #-2,A7
+0000800C  DFFC FFFFFFFE                     11  			ADDA.L #-2,A7
+00008012  2F08                              12  			MOVE.L A0,-(A7)
+00008014  3F3C 0003                         13  			MOVE.W #N,-(A7)
+00008018  3F3C 0004                         14  			MOVE.W #M,-(A7)
+0000801C  4EB9 00008066                     15  			JSR			TROVA_MASSIMO
+00008022  504F                              16   			ADDQ	#8,A7
+00008024  33DF 0000900E                     17  			MOVE.W (A7)+,INDICEMAX
+0000802A  33DF 0000900C                     18  			MOVE.W (A7)+,MAX
+00008030                                    19  
+00008030                                    20  ************************ TROVO MINIMO  ******************************
+00008030                                    21  
+00008030  41F9 00009000                     22  			LEA.L MATRICE,A0
+00008036  DFFC FFFFFFFE                     23  			ADDA.L #-2,A7
+0000803C  DFFC FFFFFFFE                     24  			ADDA.L #-2,A7
+00008042  2F08                              25  			MOVE.L A0,-(A7)
+00008044  3F3C 0003                         26  			MOVE.W #N,-(A7)
+00008048  3F3C 0004                         27  			MOVE.W #M,-(A7)
+0000804C  4EB9 000080BE                     28  			JSR			FIND_MIN
+00008052  504F                              29   			ADDQ	#8,A7
+00008054  33DF 00009012                     30  			MOVE.W (A7)+,INDICEMIN
+0000805A  33DF 00009010                     31  			MOVE.W (A7)+,MIN
+00008060  4EF9 00008060                     32  END			JMP			END
+00008066                                    33  
+00008066                                    34  ******* CONTINUARE PER LO SWAP *******************
+00008066                                    35  
+00008066                                    36  
+00008066                                    37  ************************ SUBROUTINE TROVA MASSIMO ******************************
+00008066                                    38  
+00008066  4E56 0000                         39  TROVA_MASSIMO	LINK A6,#0
+0000806A  226E 000C                         40  			MOVEA.L OFF_ADDR(A6),A1  *indirizzo della matrice
+0000806E  4240                              41  			CLR D0	
+00008070  4241                              42  			CLR D1
+00008072  4242                              43  			CLR D2
+00008074  4243                              44  			CLR D3
+00008076  4244                              45  			CLR D4
+00008078  3A2E 000A                         46  			MOVE.W OFF_N(A6),D5
+0000807C  3C2E 0008                         47  			MOVE.W OFF_M(A6),D6
+00008080  BA00                              48  FORRIGA		CMP.B D0,D5
+00008082  6700 002E                         49  			BEQ			END_RIGA
+00008086  5200                              50  			ADD.B #1,D0
+00008088  2449                              51  			MOVEA.L A1,A2
+0000808A  4241                              52  			CLR D1
+0000808C  BC01                              53  FORCOLONNA		CMP.B D1,D6	
+0000808E  6700 001C                         54  			BEQ			END_COLONNA
+00008092  5201                              55  			ADD.B #1,D1		
+00008094  1619                              56  			MOVE.B (A1)+,D3
+00008096  B604                              57  			CMP.B D4,D3
+00008098  6E00 0008                         58  			BGT			AGGIORNA_MAX
+0000809C  4EF9 0000808C                     59  			JMP			FORCOLONNA		
+000080A2  264A                              60  AGGIORNA_MAX	MOVEA.L A2,A3
+000080A4  1803                              61  			MOVE.B D3,D4	
+000080A6  4EF9 0000808C                     62  			JMP			FORCOLONNA		
+000080AC  4EF9 00008080                     63  END_COLONNA	JMP			FORRIGA
+000080B2  3D44 0012                         64  END_RIGA		MOVE.W D4,OFF_MAX(A6)
+000080B6  3D4B 0010                         65  			MOVE.W A3,OFF_MAXIND(A6)
+000080BA  4E5E                              66  			UNLK A6
+000080BC  4E75                              67  			RTS
+000080BE                                    68  					
+000080BE                                    69  ************************ SUBROUTINE TROVA MINIMO ******************************
+000080BE                                    70  
+000080BE  4E56 0000                         71  FIND_MIN		LINK A6,#0
+000080C2  226E 000C                         72  			MOVEA.L OFF_ADDR(A6),A1  *indirizzo della matrice
+000080C6  4240                              73  			CLR D0	
+000080C8  4241                              74  			CLR D1
+000080CA  4242                              75  			CLR D2
+000080CC  4243                              76  			CLR D3
+000080CE  4244                              77  			CLR D4
+000080D0  183C 0064                         78  			MOVE.B #100,D4
+000080D4  3A2E 000A                         79  			MOVE.W OFF_N(A6),D5
+000080D8  3C2E 0008                         80  			MOVE.W OFF_M(A6),D6
+000080DC  BA00                              81  RMIN			CMP.B D0,D5
+000080DE  6700 002E                         82  			BEQ			END_RMIN
+000080E2  5200                              83  			ADD.B #1,D0
+000080E4  2449                              84  			MOVEA.L A1,A2
+000080E6  4241                              85  			CLR D1
+000080E8  BC01                              86  CMIN			CMP.B D1,D6	
+000080EA  6700 001C                         87  			BEQ			END_CMIN
+000080EE  5201                              88  			ADD.B #1,D1		
+000080F0  1619                              89  			MOVE.B (A1)+,D3
+000080F2  B604                              90  			CMP.B D4,D3
+000080F4  6D00 0008                         91  			BLT			AGGMIN
+000080F8  4EF9 000080E8                     92  			JMP			CMIN	
+000080FE  264A                              93  AGGMIN  		MOVEA.L A2,A3
+00008100  1803                              94  			MOVE.B D3,D4	
+00008102  4EF9 000080E8                     95  			JMP			CMIN	
+00008108  4EF9 000080DC                     96  END_CMIN		JMP			RMIN
+0000810E  3D44 0012                         97  END_RMIN		MOVE.W D4,OFF_MIN(A6)
+00008112  3D4B 0010                         98  			MOVE.W A3,OFF_MININD(A6)
+00008116  4E5E                              99  			UNLK A6
+00008118  4E75                             100  			RTS
+0000811A                                   101  
+0000811A                                   102  
+0000811A                                   103  
+0000811A                                   104   ************************ AREA DATI ******************************
+0000811A                                   105  
+00009000                                   106  		ORG 		$9000
+00009000  02 03 50 04 05 06 07 08 01 ...   107  MATRICE 	DC.B 		$2,$3,$50,$4,$5,$6,$7,$8,$1,$9,$10,$11
+0000900C  =00009004                        108  RIGA2		EQU		MATRICE+4
+0000900C  =00009008                        109  RIGA3		EQU		MATRICE+8
+0000900C                                   110  MAX		DS.W		1
+0000900E                                   111  INDICEMAX	DS.W		1
+00009010                                   112  MIN		DS.W		1
+00009012                                   113  INDICEMIN	DS.W		1
+00009014  =00000004                        114  M		EQU		4
+00009014  =00000003                        115  N		EQU		3
+00009014  =00000008                        116  OFF_M		EQU		8
+00009014  =0000000A                        117  OFF_N		EQU		10
+00009014  =0000000C                        118  OFF_ADDR	EQU		12
+00009014  =00000010                        119  OFF_MAXIND	EQU		16
+00009014  =00000012                        120  OFF_MAX	EQU		18
+00009014  =00000010                        121  OFF_MININD	EQU		16
+00009014  =00000012                        122  OFF_MIN	EQU		18
+00009014                                   123  		END		MAIN
+
+No errors detected
+No warnings generated

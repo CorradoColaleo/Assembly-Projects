@@ -1,0 +1,30 @@
+1. Inizializzazione e Ricerca del Massimo
+All'inizio del programma, vengono azzerati alcuni registri (D0, D1, D2, D4) per evitare di avere dati residui. Successivamente, si esegue la ricerca del massimo in ciascuna delle tre righe della matrice.
+
+La subroutine TROVA_MASSIMO viene chiamata tre volte, una per ogni riga (RIGA1, RIGA2, RIGA3). Il funzionamento è il seguente:
+
+D0 contiene il numero di elementi della riga (4 in questo caso).
+D1 tiene traccia del numero di iterazioni.
+D2 mantiene il valore massimo trovato fino a quel punto.
+D3 legge il valore corrente della riga.
+Man mano che si scorrono gli elementi della riga, si confronta ogni valore con il massimo trovato fino a quel momento. Se un numero è maggiore del massimo attuale, si aggiorna il massimo e si salva il suo indirizzo. Al termine della scansione, D2 contiene il valore massimo della riga e A2 punta alla sua posizione nella memoria.
+
+2. Ricerca del Minimo
+Dopo aver trovato i massimi, il codice passa alla ricerca dei minimi nelle stesse tre righe della matrice. Il meccanismo è molto simile alla ricerca del massimo, con la differenza che:
+
+D4 parte da un valore iniziale alto (100), per assicurarsi che qualsiasi valore presente nella riga sarà più piccolo.
+Se si trova un numero più piccolo di quello attuale (D4), allora D4 viene aggiornato e A3 viene impostato con l’indirizzo corrispondente.
+Alla fine del processo, D4 conterrà il valore minimo della riga e A3 punterà alla sua posizione nella memoria.
+
+3. Scambio tra Massimo e Minimo
+Dopo aver identificato il massimo e il minimo di ciascuna riga, il programma passa alla fase di swap, eseguendo il trasferimento dei dati.
+
+La subroutine SPOSTAMENTO si occupa di scambiare i valori tra la posizione del massimo (A2) e quella del minimo (A3), utilizzando un’area di memoria temporanea puntata da A4. L’operazione avviene iterando su ciascuna delle tre righe e scambiando i valori trovati.
+
+L’algoritmo dello swap segue questi passi:
+
+Copia il valore massimo in A4 (un'area temporanea).
+Copia il valore minimo nella posizione del massimo.
+Copia il valore temporaneo (inizialmente il massimo) nella posizione del minimo.
+Incrementa i puntatori (A2, A3, A4) per proseguire allo scambio successivo.
+Una volta completata l'operazione per tutte le righe, il programma entra in un ciclo infinito (JMP END), bloccandosi, poiché ha terminato l'esecuzione.

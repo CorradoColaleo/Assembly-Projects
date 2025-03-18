@@ -1,0 +1,65 @@
+********************** AREA CODICE *****************************
+
+			ORG				$8000
+
+********************** CALCOLO CHECKSUM MSG1 *****************************
+
+MAIN			CLR.W D0
+			CLR.W D1
+			CLR.W D2
+			CLR.W D3
+			LEA.L MSG,A0
+			MOVE.B (A0)+,D1
+			JSR				CHECKSUM
+			MOVE.B D3,D4
+
+********************** SPOSTAMENTO DEL MESSAGGIO *****************************
+			
+			CLR.W D0	
+			LEA.L MSG,A0
+			ADDA.L #1,A0
+			MOVEA.L #$8200,A1
+FOR			CMP.B D0,D1
+			BEQ				ENDFOR
+			ADD.B #1,D0
+			MOVE.B (A0)+,(A1)+
+			JMP				FOR
+
+********************** CALCOLO CHECKSUM MSG2 *****************************
+
+
+ENDFOR		CLR.W D0
+			CLR.W D2
+			CLR.W D3
+			MOVEA.L #$8200,A0
+			JSR				CHECKSUM
+
+
+********************** CONFRONTO LE DUE CHECKSUM *****************************
+
+			CMP.B D3,D4
+			BEQ				OK_CHECKSUM
+			BRA				NO_CHECKSUM
+
+OK_CHECKSUM	JMP				OK_CHECKSUM
+
+NO_CHECKSUM	JMP				NO_CHECKSUM
+
+
+********************** SUBROUTINE CHECKSUM*****************************
+
+CHECKSUM		CMP.B D0,D1
+			BEQ				ENDCHECK
+			ADD.B #1,D0		
+			MOVE.B (A0)+,D2
+			EOR.B D2,D3
+			JMP				CHECKSUM
+ENDCHECK		RTS
+
+
+********************** AREA DATI*****************************
+
+			ORG				$9000
+MSG			DC.B				$8,$1,$2,$3,$4,$5,$6,$7,$8
+			END				MAIN
+

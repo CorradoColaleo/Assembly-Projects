@@ -1,0 +1,129 @@
+************************ AREA CODICE ******************************
+
+			ORG 			$8000
+
+MAIN			
+
+************************ TROVO MASSIMO ******************************
+
+			LEA.L MATRICE,A0
+			ADDA.L #-2,A7
+			ADDA.L #-2,A7
+			MOVE.L A0,-(A7)
+			MOVE.W #N,-(A7)
+			MOVE.W #M,-(A7)
+			JSR			TROVA_MASSIMO
+ 			ADDQ	#8,A7
+			MOVE.W (A7)+,INDICEMAX
+			MOVE.W (A7)+,MAX
+
+************************ TROVO MINIMO  ******************************
+
+			LEA.L MATRICE,A0
+			ADDA.L #-2,A7
+			ADDA.L #-2,A7
+			MOVE.L A0,-(A7)
+			MOVE.W #N,-(A7)
+			MOVE.W #M,-(A7)
+			JSR			FIND_MIN
+ 			ADDQ	#8,A7
+			MOVE.W (A7)+,INDICEMIN
+			MOVE.W (A7)+,MIN
+END			JMP			END
+
+******* CONTINUARE PER LO SWAP *******************
+
+
+************************ SUBROUTINE TROVA MASSIMO ******************************
+
+TROVA_MASSIMO	LINK A6,#0
+			MOVEA.L OFF_ADDR(A6),A1  *indirizzo della matrice
+			CLR D0	
+			CLR D1
+			CLR D2
+			CLR D3
+			CLR D4
+			MOVE.W OFF_N(A6),D5
+			MOVE.W OFF_M(A6),D6
+FORRIGA		CMP.B D0,D5
+			BEQ			END_RIGA
+			ADD.B #1,D0
+			MOVEA.L A1,A2
+			CLR D1
+FORCOLONNA		CMP.B D1,D6	
+			BEQ			END_COLONNA
+			ADD.B #1,D1		
+			MOVE.B (A1)+,D3
+			CMP.B D4,D3
+			BGT			AGGIORNA_MAX
+			JMP			FORCOLONNA		
+AGGIORNA_MAX	MOVEA.L A2,A3
+			MOVE.B D3,D4	
+			JMP			FORCOLONNA		
+END_COLONNA	JMP			FORRIGA
+END_RIGA		MOVE.W D4,OFF_MAX(A6)
+			MOVE.W A3,OFF_MAXIND(A6)
+			UNLK A6
+			RTS
+					
+************************ SUBROUTINE TROVA MINIMO ******************************
+
+FIND_MIN		LINK A6,#0
+			MOVEA.L OFF_ADDR(A6),A1  *indirizzo della matrice
+			CLR D0	
+			CLR D1
+			CLR D2
+			CLR D3
+			CLR D4
+			MOVE.B #100,D4
+			MOVE.W OFF_N(A6),D5
+			MOVE.W OFF_M(A6),D6
+RMIN			CMP.B D0,D5
+			BEQ			END_RMIN
+			ADD.B #1,D0
+			MOVEA.L A1,A2
+			CLR D1
+CMIN			CMP.B D1,D6	
+			BEQ			END_CMIN
+			ADD.B #1,D1		
+			MOVE.B (A1)+,D3
+			CMP.B D4,D3
+			BLT			AGGMIN
+			JMP			CMIN	
+AGGMIN  		MOVEA.L A2,A3
+			MOVE.B D3,D4	
+			JMP			CMIN	
+END_CMIN		JMP			RMIN
+END_RMIN		MOVE.W D4,OFF_MIN(A6)
+			MOVE.W A3,OFF_MININD(A6)
+			UNLK A6
+			RTS
+
+
+
+ ************************ AREA DATI ******************************
+
+		ORG 		$9000
+MATRICE 	DC.B 		$2,$3,$50,$4,$5,$6,$7,$8,$1,$9,$10,$11
+RIGA2		EQU		MATRICE+4
+RIGA3		EQU		MATRICE+8
+MAX		DS.W		1
+INDICEMAX	DS.W		1
+MIN		DS.W		1
+INDICEMIN	DS.W		1
+M		EQU		4
+N		EQU		3
+OFF_M		EQU		8
+OFF_N		EQU		10
+OFF_ADDR	EQU		12
+OFF_MAXIND	EQU		16
+OFF_MAX	EQU		18
+OFF_MININD	EQU		16
+OFF_MIN	EQU		18
+		END		MAIN
+
+
+
+
+
+

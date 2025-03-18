@@ -1,0 +1,51 @@
+00000000                                     1  ***************************AREA CODICE ***********************************
+00008000                                     2  			ORG					$8000
+00008000  41F9 00009000                      3  MAIN			LEA.L WORD,A0
+00008006  4242                               4  			CLR D2
+00008008  4243                               5  			CLR D3
+0000800A  DFFC FFFFFFFE                      6  			ADDA.L #-2,A7
+00008010  1F3C 0000                          7  			MOVE.B #0,-(A7)
+00008014  1F18                               8  			MOVE.B (A0)+,-(A7)						
+00008016  4EB9 0000804A                      9  			JSR					COUNTBIT 
+0000801C  544F                              10  			ADDQ	#2,A7
+0000801E  33DF 00009002                     11  			MOVE.W (A7)+,RIS
+00008024                                    12  		
+00008024  4242                              13  			CLR D2
+00008026  4243                              14  			CLR D3
+00008028  DFFC FFFFFFFE                     15  			ADDA.L #-2,A7
+0000802E  1F3C 0000                         16  			MOVE.B #0,-(A7)
+00008032  1F18                              17  			MOVE.B (A0)+,-(A7)
+00008034  4EB9 0000804A                     18  			JSR					COUNTBIT 
+0000803A  544F                              19  			ADDQ	#2,A7
+0000803C  381F                              20  			MOVE.W (A7)+,D4
+0000803E  D979 00009002                     21  			ADD.W D4,RIS
+00008044  4EF9 00008044                     22  LOOP			JMP					LOOP
+0000804A                                    23  
+0000804A  4E56 0000                         24  COUNTBIT		LINK A6,#0
+0000804E  102E 0008                         25  			MOVE.B OFF_VAL(A6),D0
+00008052  4241                              26  			CLR D1
+00008054  123C 0001                         27  			MOVE.B #1,D1
+00008058                                    28  
+00008058  B23C 0000                         29  FOR			CMP.B #0,D1
+0000805C  6700 0016                         30  			BEQ					ENDFOR
+00008060  1401                              31  			MOVE.B D1,D2
+00008062  C400                              32  			AND.B D0,D2
+00008064  E301                              33  			ASL.B #1,D1
+00008066  B43C 0000                         34  			CMP.B #0,D2			
+0000806A  67EC                              35  			BEQ					FOR
+0000806C  5203                              36  			ADD.B #1,D3			
+0000806E  4EF9 00008058                     37  			JMP					FOR
+00008074  3D43 000A                         38  ENDFOR		MOVE.W D3,OFF_RIS(A6)
+00008078  4E5E                              39  			UNLK A6
+0000807A  4E75                              40  			RTS
+0000807C                                    41  
+0000807C                                    42  ***************************AREA DATI **************************************
+00009000                                    43  			ORG					$9000
+00009000  F21C                              44  WORD			DC.W					$F21C
+00009002                                    45  RIS			DS.W					1
+00009004  =00000008                         46  OFF_VAL		EQU					8
+00009004  =0000000A                         47  OFF_RIS		EQU					10
+00009004                                    48  			END					MAIN
+
+No errors detected
+No warnings generated

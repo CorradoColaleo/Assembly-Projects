@@ -1,0 +1,26 @@
+Il programma ha l’obiettivo di calcolare il checksum di un messaggio, spostarlo in un'altra area di memoria e poi verificare che il checksum del messaggio originale e quello della copia siano uguali. Il checksum viene calcolato usando un'operazione XOR su ogni byte del messaggio.
+
+1. Calcolo del primo checksum
+All'inizio, il programma azzera alcuni registri (D0, D1, D2 e D3) per assicurarsi che non contengano dati residui. Poi, imposta A0 per puntare all’inizio del messaggio originale (MSG). Il primo byte del messaggio viene caricato in D1, che rappresenta la lunghezza del messaggio.
+
+Dopo questa preparazione, il programma chiama la sottoroutine CHECKSUM, che calcola un valore di controllo eseguendo una serie di operazioni XOR sui byte del messaggio. Il risultato del checksum viene memorizzato in D3 e copiato in D4 per un confronto successivo.
+
+2. Spostamento del messaggio in una nuova area di memoria
+Una volta calcolato il primo checksum, il programma azzera D0, reimposta A0 per puntare all’inizio del messaggio e prepara A1 per puntare alla nuova area di memoria, situata all’indirizzo $8200.
+
+A questo punto, inizia un ciclo (FOR) in cui vengono copiati i byte del messaggio uno per uno nella nuova area. Il ciclo termina quando tutti i byte del messaggio sono stati spostati.
+
+3. Calcolo del checksum sulla copia
+Dopo aver copiato il messaggio, il programma resetta alcuni registri e imposta A0 per puntare all’indirizzo $8200, ovvero la nuova posizione del messaggio. Poi richiama nuovamente la sottoroutine CHECKSUM, questa volta calcolando il valore di controllo sulla copia del messaggio.
+
+4. Confronto tra i due checksum
+Ora il programma confronta i due checksum. Se il valore calcolato sulla copia (D3) è uguale a quello originale (D4), significa che il messaggio è stato copiato correttamente, quindi il programma entra in un loop infinito (OK_CHECKSUM). Altrimenti, se i due checksum non corrispondono, entra in un altro loop infinito (NO_CHECKSUM), segnalando che c’è stato un errore nella copia.
+
+5. Funzionamento della subroutine CHECKSUM
+La funzione CHECKSUM riceve in input il messaggio puntato da A0 e lo elabora per ottenere il valore di controllo:
+
+Controlla se ha elaborato tutti i byte del messaggio.
+Se ci sono ancora dati, incrementa D0 e preleva un byte.
+Esegue un'operazione XOR tra il byte corrente e il valore già accumulato in D3.
+Continua fino a processare tutto il messaggio.
+Alla fine, ritorna il valore di checksum in D3.

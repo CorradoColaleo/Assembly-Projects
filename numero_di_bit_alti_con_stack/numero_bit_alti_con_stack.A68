@@ -1,0 +1,49 @@
+***************************AREA CODICE ***********************************
+			ORG					$8000
+MAIN			LEA.L WORD,A0
+			CLR D2
+			CLR D3
+			ADDA.L #-2,A7
+			MOVE.B #0,-(A7)			*** AGGIUNTO PER EVITARE IL PROBLEMA DELL'ACCESSO DISPARI
+			MOVE.B (A0)+,-(A7)						
+			JSR					COUNTBIT 
+			ADDQ	#2,A7
+			MOVE.W (A7)+,RIS
+		
+			CLR D2
+			CLR D3
+			ADDA.L #-2,A7
+			MOVE.B #0,-(A7)			*** AGGIUNTO PER EVITARE IL PROBLEMA DELL'ACCESSO DISPARI
+			MOVE.B (A0)+,-(A7)
+			JSR					COUNTBIT 
+			ADDQ	#2,A7
+			MOVE.W (A7)+,D4
+			ADD.W D4,RIS
+LOOP			JMP					LOOP
+
+COUNTBIT		LINK A6,#0
+			MOVE.B OFF_VAL(A6),D0
+			CLR D1
+			MOVE.B #1,D1
+
+FOR			CMP.B #0,D1
+			BEQ					ENDFOR
+			MOVE.B D1,D2
+			AND.B D0,D2
+			ASL.B #1,D1
+			CMP.B #0,D2			
+			BEQ					FOR
+			ADD.B #1,D3			
+			JMP					FOR
+ENDFOR		MOVE.W D3,OFF_RIS(A6)
+			UNLK A6
+			RTS
+
+***************************AREA DATI **************************************
+			ORG					$9000
+WORD			DC.W					$F21C
+RIS			DS.W					1
+OFF_VAL		EQU					8
+OFF_RIS		EQU					10
+			END					MAIN
+

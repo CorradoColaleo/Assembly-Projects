@@ -1,0 +1,66 @@
+1️⃣ Inizializzazione e chiamata alle funzioni
+Il codice inizia impostando un puntatore alla matrice e preparando lo stack per chiamare due subroutine: TROVA_MASSIMO e FIND_MIN.
+
+Passaggio dei parametri alle funzioni
+La matrice è puntata da A0 e il suo indirizzo viene salvato nello stack.
+I valori N (numero di righe) e M (numero di colonne) vengono anch'essi messi nello stack.
+Dopo la chiamata alla funzione, i risultati vengono estratti dallo stack e salvati in due variabili: il valore massimo in MAX e il suo indice in INDICEMAX.
+Lo stesso procedimento viene ripetuto per trovare il minimo, usando FIND_MIN. Alla fine, le variabili MIN e INDICEMIN contengono rispettivamente il valore minimo e il suo indice.
+
+2️⃣ Funzione TROVA_MASSIMO
+Questa subroutine percorre l'intera matrice alla ricerca del valore massimo. Vediamo il suo funzionamento:
+
+Setup della funzione
+
+Viene creato un frame di stack con LINK A6,#0 per poter accedere ai parametri passati nello stack.
+Il puntatore A1 viene inizializzato con l'indirizzo della matrice.
+I registri D0, D1, D2, D3, D4 vengono azzerati per essere utilizzati come contatori e per memorizzare il massimo.
+Scorrimento della matrice
+
+Il ciclo principale scorre tutte le righe (FORRIGA).
+Per ogni riga, viene eseguito un ciclo secondario (FORCOLONNA) che scorre tutte le colonne.
+Ogni valore viene letto dalla memoria e confrontato con il massimo attuale (D4).
+Aggiornamento del massimo
+
+Se il valore corrente (D3) è maggiore del massimo trovato finora (D4), allora D4 viene aggiornato.
+L'indirizzo del massimo viene salvato in A3 per poter essere recuperato dopo.
+Salvataggio del risultato
+
+Il valore massimo viene memorizzato in OFF_MAX(A6), mentre il suo indirizzo viene salvato in OFF_MAXIND(A6).
+La funzione termina con RTS, restituendo il controllo al codice principale.
+3️⃣ Funzione FIND_MIN
+Questa funzione lavora in modo simile a TROVA_MASSIMO, ma cerca il valore minimo invece che il massimo.
+
+Setup della funzione
+
+L’indirizzo della matrice viene caricato in A1.
+Il valore iniziale di D4 viene impostato a 100 (MOVE.B #100,D4), un valore sufficientemente grande da essere sostituito rapidamente dal minimo effettivo.
+Scorrimento della matrice
+
+Il ciclo principale (RMIN) attraversa tutte le righe.
+Il ciclo secondario (CMIN) attraversa tutte le colonne.
+Ogni valore letto viene confrontato con D4 per verificare se è più piccolo.
+Aggiornamento del minimo
+
+Se il valore corrente (D3) è minore del minimo trovato finora (D4), allora D4 viene aggiornato.
+L'indirizzo del minimo viene salvato in A3.
+Salvataggio del risultato
+
+Il valore minimo viene memorizzato in OFF_MIN(A6), mentre il suo indirizzo viene salvato in OFF_MININD(A6).
+La funzione termina con RTS.
+
+4️⃣ Dati in memoria
+
+Il codice utilizza una matrice di valori memorizzata in memoria. Essa è definita come segue:
+
+MATRICE:    2,  3, 50,  4
+            5,  6,  7,  8
+            1,  9, 10, 11
+            
+Le costanti M e N definiscono le dimensioni della matrice (3 righe, 4 colonne).
+Le variabili MAX, INDICEMAX, MIN, INDICEMIN servono a memorizzare i risultati
+
+5️⃣ Cosa manca?
+Attualmente il codice trova il massimo e il minimo della matrice, ma non esegue ancora lo swap tra di loro. Il prossimo passo dovrebbe essere l'implementazione di una funzione SWAP che scambia i due valori usando gli indirizzi memorizzati.
+
+Vuoi che ti aiuti a scrivere la funzione per lo scambio? 😊

@@ -1,0 +1,118 @@
+Descrizione Generale
+
+Il codice implementa un meccanismo di gestione di una coda circolare in memoria. L'algoritmo legge un array di byte VET1, in cui ogni valore rappresenta un'operazione:
+
+0 → Prelievo di un elemento dalla coda.
+1 → Inserimento di un elemento nella coda.
+Altro valore → Il programma ignora il valore e continua con l'iterazione successiva.
+L'array VET2 contiene i dati da inserire nella coda in caso di operazione di inserimento.
+
+La coda è allocata dinamicamente in memoria (CODA), e sono definiti i puntatori:
+
+TESTAF: Testa della coda (inizialmente punta all'inizio di CODA).
+TESTAV: Testa di lettura della coda.
+CODAF: Ultima posizione valida della coda.
+CODAV: Puntatore alla posizione di scrittura.
+
+L'obiettivo è simulare un comportamento FIFO (First In, First Out) della coda utilizzando una gestione circolare.
+
+ORG $8000
+
+Il codice viene posizionato all'indirizzo $8000
+
+MAIN	MOVE.W #0,D0
+		MOVE.W #8,D1
+		LEA.L VET1,A0
+		MOVE.L CODAV,A1
+		MOVE.L TESTAV,A2
+		MOVE.L CODAF,A3
+		LEA.L VET2,A4
+
+D0 = 0 → Contatore del ciclo FOR.
+D1 = 8 → Numero totale di operazioni da eseguire.
+A0 = VET1 → Puntatore all'array di operazioni VET1.
+A1 = CODAV → Puntatore alla posizione di scrittura nella coda.
+A2 = TESTAV → Puntatore alla posizione di lettura della coda.
+A3 = CODAF → Ultima posizione valida della coda.
+A4 = VET2 → Puntatore ai dati da inserire nella coda.
+
+FOR		CMP.W D0,D1	
+		BEQ FINEFOR
+		ADD.W #1,D0
+		MOVE.B (A0),D2
+		MOVE.B (A4),D4
+		ADDA.L #1,A4
+		ADDA.L #1,A0
+
+Confronta il contatore D0 con D1 per determinare la fine del ciclo.
+Legge un valore da VET1 in D2 (operazione da eseguire).
+Legge un valore da VET2 in D4 (dato da inserire, se necessario).
+Avanza entrambi i puntatori A0 e A4.
+
+CMP.B #1,D2
+BEQ INSERIMENTO
+Se il valore in D2 è 1, viene effettuato l'inserimento nella coda.
+
+INSERIMENTO	MOVE.B D4,(A1)
+		CMPA.L A1,A3
+		BEQ RESTARTI
+		ADDA.L #1,A1
+		JMP FOR
+
+Memorizza il valore D4 (da VET2) nella coda in A1.
+Se il puntatore A1 ha raggiunto A3 (fine della coda), si resetta alla posizione iniziale (TESTAF).
+Altrimenti, il puntatore A1 avanza.
+
+RESTARTI	MOVE.L TESTAF,A1
+		JMP FOR
+
+Se A1 ha raggiunto A3, si resetta alla posizione iniziale della coda (TESTAF).
+
+CMP.B #0,D2	
+BEQ PRELIEVO
+Se il valore in D2 è 0, viene effettuato un prelievo dalla coda.
+
+PRELIEVO	CMPA.W A1,A2
+		BEQ FOR
+		MOVE.B (A2),D3
+		CMPA.L A2,A3
+		BEQ RESTARTP
+		ADDA.L #1,A2
+		JMP FOR
+
+Se la coda è vuota (testa e coda coincidono), salta l'operazione.
+Altrimenti, preleva un valore da A2 in D3.
+Se A2 ha raggiunto A3 (fine della coda), si resetta alla posizione iniziale.
+Altrimenti, A2 avanza.
+
+RESTARTP	MOVE.L TESTAF,A2
+		JMP FOR
+
+Se A2 ha raggiunto la fine (A3), si resetta alla posizione iniziale (TESTAF).
+
+FINEFOR	JMP FINEFOR
+Il programma rimane in un loop infinito una volta terminato il ciclo.
+
+ORG $9000
+VET1	DC.B	$0,$1,$1,$0,$1,$F,$A,$1
+VET2	DC.B	$A,$2,$1,$B,$F,$A,$B,$1
+CODA	DS.B	8
+TESTAF	DC.L	CODA
+TESTAV	DC.L	CODA
+CODAF	DC.L	CODA+7
+CODAV	DC.L	CODA
+END MAIN
+
+VET1: Contiene le operazioni da eseguire (0=prelievo, 1=inserimento, altro=ignora).
+VET2: Contiene i valori da inserire nella coda.
+CODA: Riserva 8 byte per la coda.
+TESTAF, TESTAV: Puntatori alla testa della coda.
+CODAF: Puntatore alla fine della coda.
+CODAV: Puntatore di scrittura iniziale.
+
+Analisi del Funzionamento
+Il codice scorre VET1, esaminando ogni valore.
+Se VET1[i] è 1, prende VET2[i] e lo inserisce nella coda.
+Se VET1[i] è 0, preleva un valore dalla coda.
+Se la coda è piena o vuota, viene gestita in modo circolare.
+Il programma continua fino a completare 8 iterazioni.

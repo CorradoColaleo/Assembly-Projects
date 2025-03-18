@@ -1,0 +1,55 @@
+00008000                                     1  			ORG			$8000
+00008000  303C 0000                          2  MAIN			MOVE.W #0,D0
+00008004  323C 0008                          3  			MOVE.W #8,D1
+00008008  41F9 00009000                      4  			LEA.L VET1,A0
+0000800E  2279 00009024                      5  			MOVE.L CODAV,A1
+00008014  2479 0000901C                      6  			MOVE.L TESTAV,A2
+0000801A  2679 00009020                      7  			MOVE.L CODAF,A3
+00008020  49F9 00009008                      8  			LEA.L VET2,A4
+00008026                                     9  
+00008026  B240                              10  FOR			CMP.W D0,D1	
+00008028  6700 006E                         11  			BEQ			FINEFOR
+0000802C  5240                              12  			ADD.W #1,D0
+0000802E  1410                              13  			MOVE.B (A0),D2
+00008030  1814                              14  			MOVE.B (A4),D4
+00008032  D9FC 00000001                     15  			ADDA.L #1,A4
+00008038  D1FC 00000001                     16  			ADDA.L #1,A0
+0000803E  B43C 0001                         17  			CMP.B #1,D2
+00008042  6700 0010                         18  			BEQ			INSERIMENTO
+00008046  B43C 0000                         19  			CMP.B #0,D2	
+0000804A  6700 0028                         20  			BEQ			PRELIEVO
+0000804E  4EF9 00008026                     21  			JMP			FOR
+00008054                                    22  
+00008054  1284                              23  INSERIMENTO		MOVE.B D4,(A1)
+00008056  B7C9                              24  			CMPA.L A1,A3
+00008058  6700 000E                         25  			BEQ			RESTARTI
+0000805C  D3FC 00000001                     26  			ADDA.L #1,A1
+00008062  4EF9 00008026                     27  			JMP			FOR
+00008068                                    28  
+00008068  2279 00009018                     29  RESTARTI		MOVE.L TESTAF,A1
+0000806E  4EF9 00008026                     30  			JMP			FOR
+00008074                                    31  
+00008074  B4C9                              32  PRELIEVO		CMPA.W A1,A2
+00008076  67AE                              33  			BEQ			FOR
+00008078  1612                              34  			MOVE.B (A2),D3
+0000807A  B7CA                              35  			CMPA.L A2,A3
+0000807C  6700 000E                         36  			BEQ			RESTARTP
+00008080  D5FC 00000001                     37  			ADDA.L #1,A2
+00008086  4EF9 00008026                     38  			JMP			FOR
+0000808C  2479 00009018                     39  RESTARTP		MOVE.L TESTAF,A2
+00008092  4EF9 00008026                     40  			JMP			FOR
+00008098                                    41  
+00008098  4EF9 00008098                     42  FINEFOR		JMP			FINEFOR
+0000809E                                    43  	
+00009000                                    44  			ORG			$9000
+00009000  00 01 01 00 01 0F 0A 01           45  VET1			DC.B			$0,$1,$1,$0,$1,$F,$A,$1
+00009008  0A 02 01 0B 0F 0A 0B 01           46  VET2			DC.B			$A,$2,$1,$B,$F,$A,$B,$1
+00009010                                    47  CODA			DS.B			8
+00009018  00009010                          48  TESTAF		DC.L			CODA
+0000901C  00009010                          49  TESTAV		DC.L			CODA
+00009020  00009017                          50  CODAF			DC.L			CODA+7
+00009024  00009010                          51  CODAV			DC.L			CODA
+00009028                                    52  			END			MAIN
+
+No errors detected
+No warnings generated

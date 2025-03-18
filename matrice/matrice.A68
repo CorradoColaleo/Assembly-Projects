@@ -1,0 +1,119 @@
+************************ AREA CODICE ******************************
+
+			ORG 			$8000
+
+MAIN			
+
+************************ TROVO MASSIMO ******************************
+
+			CLR.W D0
+			CLR.W D1
+			CLR.W D2 
+			CLR.W D4
+			LEA.L RIGA1,A0
+			LEA.L RIGA1,A1
+			MOVE.B #4,D0
+			JSR			TROVA_MASSIMO
+ 
+			LEA.L RIGA2,A0
+			LEA.L RIGA2,A1
+			CLR.W D1
+			CLR.W D3
+			JSR			TROVA_MASSIMO
+
+			LEA.L RIGA3,A0
+			LEA.L RIGA3,A1
+			CLR.W D1
+			CLR.W D3
+			JSR			TROVA_MASSIMO
+
+************************ TROVO MINIMO ******************************
+			
+			CLR.W D1
+			CLR.W D3
+			LEA.L RIGA1,A0
+			LEA.L RIGA1,A1
+			MOVE.B #4,D0
+			MOVE.B #100,D4
+			JSR			TMIN
+ 
+			LEA.L RIGA2,A0
+			LEA.L RIGA2,A1
+			CLR.W D1
+			CLR.W D3
+			JSR			TMIN
+
+			LEA.L RIGA3,A0
+			LEA.L RIGA3,A1
+			CLR.W D1
+			CLR.W D3
+			JSR			TMIN
+
+************************ SWAP ******************************
+
+			MOVEA.L #$9200,A4
+			CLR.W D1
+			JSR			SPOSTAMENTO
+
+************************ FINE ******************************
+
+END			JMP			END
+
+
+
+************************ SUBROUTINE TROVA MASSIMO ******************************
+
+TROVA_MASSIMO	CMP.B D1,D0
+			BEQ			FINE_MAX
+			ADD #1,D1
+			MOVE.B (A0)+,D3
+			CMP.B D2,D3
+			BGT			AGGIORNA_MASSIMO
+			BRA			TROVA_MASSIMO
+ 
+AGGIORNA_MASSIMO MOVE.B D3,D2
+			MOVEA.L A1,A2
+			BRA			TROVA_MASSIMO
+ 
+FINE_MAX		RTS				
+ 
+************************ SUBROUTINE TROVA MINIMO ******************************
+
+TMIN			CMP.B D1,D0
+			BEQ			FMIN
+			ADD #1,D1
+			MOVE.B (A0)+,D3
+			CMP.B D4,D3
+			BLT			AGGMIN
+			BRA			TMIN
+AGGMIN		MOVE.B D3,D4
+			MOVEA.L A1,A3
+			BRA			TMIN
+ 
+FMIN			RTS				
+
+************************ SUBROUTINE SPOSTAMENTO ******************************
+SPOSTAMENTO	CMP.B D1,D0
+			BEQ			FINE_SPOSTAMENTO
+			ADD #1,D1
+			MOVE.B (A2),(A4)
+			MOVE.B (A3),(A2)
+			MOVE.B (A4),(A3)
+			ADDA.L #1,A2
+			ADDA.L #1,A3
+			ADDA.L #1,A4
+			JMP			SPOSTAMENTO
+FINE_SPOSTAMENTO	RTS
+
+ ************************ AREA DATI ******************************
+
+		ORG 		$9000
+MATRICE 	DC.B 		$2,$3,$50,$4,$5,$6,$7,$8,$1,$9,$10,$11
+RIGA1		EQU		MATRICE
+RIGA2		EQU		MATRICE+4
+RIGA3		EQU		RIGA2+4
+		END 		MAIN
+
+
+
+
