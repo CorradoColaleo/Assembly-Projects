@@ -113,7 +113,9 @@ MIN		DS.W		1
 INDICEMIN	DS.W		1
 M		EQU		4
 N		EQU		3
-OFF_M		EQU		8
+OFF_M		EQU		8 	  * Perchè 8? Perchè io devo considerare 4 byte iniziali dove ci metto A6 
+						  * quando faccio la LINK (questo è importante perchè lo stack pointer si potrebbe muovere e gli spiazzamenti che ho calcolato non servirebbero più)
+						  * in aggiunta devo considerare i 4 byte dell'indirizzo di ritorno
 OFF_N		EQU		10
 OFF_ADDR	EQU		12
 OFF_MAXIND	EQU		16

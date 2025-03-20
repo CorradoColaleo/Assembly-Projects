@@ -4,7 +4,7 @@
 00008006  4242                               4  			CLR D2
 00008008  4243                               5  			CLR D3
 0000800A  DFFC FFFFFFFE                      6  			ADDA.L #-2,A7
-00008010  1F3C 0000                          7  			MOVE.B #0,-(A7)
+00008010  1F3C 0000                          7  			MOVE.B #0,-(A7)			*** AGGIUNTO PER EVITARE IL PROBLEMA DELL'ACCESSO DISPARI
 00008014  1F18                               8  			MOVE.B (A0)+,-(A7)						
 00008016  4EB9 0000804A                      9  			JSR					COUNTBIT 
 0000801C  544F                              10  			ADDQ	#2,A7
@@ -13,7 +13,7 @@
 00008024  4242                              13  			CLR D2
 00008026  4243                              14  			CLR D3
 00008028  DFFC FFFFFFFE                     15  			ADDA.L #-2,A7
-0000802E  1F3C 0000                         16  			MOVE.B #0,-(A7)
+0000802E  1F3C 0000                         16  			MOVE.B #0,-(A7)			*** AGGIUNTO PER EVITARE IL PROBLEMA DELL'ACCESSO DISPARI
 00008032  1F18                              17  			MOVE.B (A0)+,-(A7)
 00008034  4EB9 0000804A                     18  			JSR					COUNTBIT 
 0000803A  544F                              19  			ADDQ	#2,A7

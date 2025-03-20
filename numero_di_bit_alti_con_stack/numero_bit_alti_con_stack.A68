@@ -1,6 +1,6 @@
 ***************************AREA CODICE ***********************************
 			ORG					$8000
-MAIN			LEA.L WORD,A0
+MAIN		LEA.L WORD,A0
 			CLR D2
 			CLR D3
 			ADDA.L #-2,A7
@@ -21,7 +21,7 @@ MAIN			LEA.L WORD,A0
 			ADD.W D4,RIS
 LOOP			JMP					LOOP
 
-COUNTBIT		LINK A6,#0
+COUNTBIT	LINK A6,#0
 			MOVE.B OFF_VAL(A6),D0
 			CLR D1
 			MOVE.B #1,D1
@@ -46,4 +46,5 @@ RIS			DS.W					1
 OFF_VAL		EQU					8
 OFF_RIS		EQU					10
 			END					MAIN
+
 
