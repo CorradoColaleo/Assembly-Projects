@@ -1,0 +1,52 @@
+00008100                                     1  				ORG					$8100
+00008100  4E56 0000                          2  FIND_INSTRUCTION		LINK A6,#0
+00008104  48E7 F0C0                          3  				MOVEM.L D0-D3/A0-A1,-(SP)
+00008108  206E 0008                          4  				MOVE.L STARTOFF(A6),A0
+0000810C  226E 000C                          5  				MOVE.L ENDOFF(A6),A1
+00008110  302E 0010                          6  				MOVE.W TOFINDOFF(A6),D0
+00008114  3218                               7  WHILE				MOVE.W (A0)+,D1
+00008116  526E 0014                          8  				ADD.W #1,NUMOFF(A6)
+0000811A  B240                               9  				CMP.W D0,D1
+0000811C  6700 000E                         10  				BEQ					FOUNDX
+00008120  B1C9                              11  				CMPA.L A1,A0
+00008122  6E00 0014                         12  				BGT					FINEWHILE
+00008126  4EF9 00008114                     13  				JMP					WHILE	
+0000812C                                    14  				
+0000812C                                    15  
+0000812C  3D7C 0001 0012                    16  FOUNDX			MOVE.W #1,FOUNDOFF(A6)
+00008132  4EF9 00008138                     17  				JMP					FINEWHILE
+00008138                                    18  
+00008138  4CDF 030F                         19  FINEWHILE			MOVEM.L (SP)+,D0-D3/A0-A1
+0000813C  4E5E                              20  				UNLK A6
+0000813E  4E75                              21  				RTS	
+00008140                                    22  		
+00008140                                    23  			
+00008140                                    24  
+00008200                                    25  				ORG					$8200
+00008200  DFFC FFFFFFFE                     26  MAIN				ADDA.L #-2,SP
+00008206  DFFC FFFFFFFE                     27  				ADDA.L #-2,SP
+0000820C  3F3C 3803                         28  				MOVE.W #TOFIND,-(SP)
+00008210  2F3C 00008300                     29  				MOVE.L #END,-(SP)
+00008216  2F3C 00008200                     30  				MOVE.L #START,-(SP)
+0000821C  4EB9 00008100                     31  				JSR					FIND_INSTRUCTION
+00008222  504F                              32  				ADDQ #8,SP
+00008224  544F                              33  				ADDQ #2,SP	
+00008226  33DF 00008500                     34  				MOVE.W (SP)+,NUMBERS
+0000822C  33DF 00008502                     35  				MOVE.W (SP)+,FOUND
+00008232  4EF9 00008232                     36  LOOP				JMP					LOOP
+00008238                                    37  
+00008500                                    38  				ORG 					$8500
+00008500                                    39  NUMBERS			DS.W					1
+00008502                                    40  FOUND			DS.W					1
+00008504  =00008200                         41  START		 		EQU 					$8200 
+00008504  =00008300                         42  END		 		EQU					$8300  
+00008504  =00003803                         43  TOFIND			EQU 					$3803   
+00008504  =00000008                         44  STARTOFF			EQU					8
+00008504  =0000000C                         45  ENDOFF			EQU					12
+00008504  =00000010                         46  TOFINDOFF			EQU					16
+00008504  =00000012                         47  FOUNDOFF			EQU					18
+00008504  =00000014                         48  NUMOFF			EQU					20
+00008504                                    49  				END					MAIN
+
+No errors detected
+No warnings generated

@@ -1,0 +1,18 @@
+00008100                                     1  			ORG 			$8100				
+00008100  103C 0005                          2  MAIN			MOVE.B #5,D0
+00008104  223C 00008200                      3  			MOVE.L #VAR1,D1
+0000810A  1439 00008200                      4  			MOVE.B VAR1,D2
+00008110                                     5  			*MOVE.L VAR2,D3 -> SBAGLIATO -> LEGGEREBBE A 7 COME INDIRIZZO
+00008110  283C 00000007                      6  			MOVE.L #VAR2,D4
+00008116  2A39 00008300                      7  			MOVE.L VAR3,D5
+0000811C  2C3C 00008300                      8  			MOVE.L #VAR3,D6
+00008122  4EF9 00008122                      9  LOOP			JMP			LOOP
+00008128                                    10  
+00008200                                    11  			ORG			$8200
+00008200  06                                12  VAR1			DC.B			6
+00008201  =00000007                         13  VAR2			EQU			7
+00008201  =00008300                         14  VAR3			EQU			$8300
+00008201                                    15  			END			MAIN
+
+No errors detected
+No warnings generated

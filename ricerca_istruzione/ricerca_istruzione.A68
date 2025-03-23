@@ -1,0 +1,51 @@
+				ORG					$8100
+FIND_INSTRUCTION		LINK A6,#0
+				MOVEM.L D0-D3/A0-A1,-(SP)
+				MOVE.L STARTOFF(A6),A0
+				MOVE.L ENDOFF(A6),A1
+				MOVE.W TOFINDOFF(A6),D0
+WHILE				MOVE.W (A0)+,D1
+				ADD.W #1,NUMOFF(A6)
+				CMP.W D0,D1
+				BEQ					FOUNDX
+				CMPA.L A1,A0
+				BGT					FINEWHILE
+				JMP					WHILE	
+				
+
+FOUNDX			MOVE.W #1,FOUNDOFF(A6)
+				JMP					FINEWHILE
+
+FINEWHILE			MOVEM.L (SP)+,D0-D3/A0-A1
+				UNLK A6
+				RTS	
+		
+			
+
+				ORG					$8200
+MAIN				ADDA.L #-2,SP
+				ADDA.L #-2,SP
+				MOVE.W #TOFIND,-(SP)
+				MOVE.L #END,-(SP)
+				MOVE.L #START,-(SP)
+				JSR					FIND_INSTRUCTION
+				ADDQ #8,SP
+				ADDQ #2,SP	
+				MOVE.W (SP)+,NUMBERS
+				MOVE.W (SP)+,FOUND
+LOOP				JMP					LOOP
+
+				ORG 					$8500
+NUMBERS			DS.W					1
+FOUND			DS.W					1
+START		 		EQU 					$8200 
+END		 		EQU					$8300  
+TOFIND			EQU 					$3803   
+STARTOFF			EQU					8
+ENDOFF			EQU					12
+TOFINDOFF			EQU					16
+FOUNDOFF			EQU					18
+NUMOFF			EQU					20
+				END					MAIN
+
+

@@ -1,0 +1,61 @@
+                ORG         $8100           ; Inizio del codice all'indirizzo $8100
+
+FIND_INSTRUCTION 
+                LINK A6,#0                  ; Salva il frame pointer precedente e crea un nuovo frame su stack
+
+                MOVEM.L D0-D3/A0-A1,-(SP)   ; Salva i registri D0-D3 e A0-A1 sullo stack (preserva il loro contenuto)
+
+                MOVE.L STARTOFF(A6),A0      ; Carica l'indirizzo di inizio array in A0 (START)
+                MOVE.L ENDOFF(A6),A1        ; Carica l'indirizzo di fine array in A1 (END)
+                MOVE.W TOFINDOFF(A6),D0     ; Carica il valore da cercare in D0 (TOFIND)
+
+WHILE           MOVE.W (A0)+,D1             ; Carica un elemento dall'array in D1 e incrementa A0
+                ADD.W #1,NUMOFF(A6)         ; Incrementa il contatore degli elementi analizzati (NUMBERS)
+                CMP.W D0,D1                 ; Confronta il valore letto con quello da cercare
+                BEQ     FOUNDX              ; Se uguale, salta all'etichetta FOUNDX
+                CMPA.L A1,A0                ; Confronta A0 con l'indirizzo di fine array
+                BGT     FINEWHILE           ; Se A0 ha superato A1, termina il ciclo
+                JMP     WHILE               ; Altrimenti, ripeti il ciclo
+
+FOUNDX          MOVE.W #1,FOUNDOFF(A6)      ; Imposta FOUND a 1 (valore trovato)
+                JMP     FINEWHILE           ; Salta alla fine della funzione
+
+FINEWHILE       MOVEM.L (SP)+,D0-D3/A0-A1   ; Ripristina i registri salvati in precedenza
+                UNLK A6                     ; Ripristina il frame pointer precedente
+                RTS                         ; Ritorna dal sottoprogramma
+
+;----------------------------------------------------------
+
+                ORG     $8200               ; Inizio del programma principale a $8200
+
+MAIN            ADDA.L #-2,SP               ; Alloca 2 byte sullo stack (per NUMBERS)
+                ADDA.L #-2,SP               ; Alloca altri 2 byte (per FOUND)
+                MOVE.W #TOFIND,-(SP)        ; Inserisce il valore da cercare nello stack
+                MOVE.L #END,-(SP)           ; Inserisce l'indirizzo di fine array nello stack
+                MOVE.L #START,-(SP)         ; Inserisce l'indirizzo di inizio array nello stack
+                JSR FIND_INSTRUCTION        ; Chiama la subroutine di ricerca
+                ADDQ #8,SP                  ; Libera 8 byte (START e END)
+                ADDQ #2,SP                  ; Libera 2 byte (TOFIND)
+                MOVE.W (SP)+,NUMBERS        ; Salva il valore NUMBERS dalla pila nella variabile NUMBERS
+                MOVE.W (SP)+,FOUND          ; Salva il valore FOUND dalla pila nella variabile FOUND
+
+LOOP            JMP LOOP                    ; Loop infinito (fine programma)
+
+;----------------------------------------------------------
+
+                ORG $8500                   ; Sezione dei dati a $8500
+
+NUMBERS         DS.W 1                      ; Riserva 1 word (2 byte) per il numero di elementi letti
+FOUND           DS.W 1                      ; Riserva 1 word per indicare se il valore è stato trovato (0 o 1)
+
+START           EQU $8200                   ; Indirizzo di inizio array (coincide con MAIN)
+END             EQU $8300                   ; Indirizzo di fine array
+TOFIND          EQU $3803                   ; Valore da cercare
+
+STARTOFF        EQU 8                       ; Offset del parametro START nello stack frame
+ENDOFF          EQU 12                      ; Offset del parametro END
+TOFINDOFF       EQU 16                      ; Offset del parametro TOFIND
+FOUNDOFF        EQU 18                      ; Offset della variabile FOUND
+NUMOFF          EQU 20                      ; Offset della variabile NUMBERS
+
+                END MAIN                    ; Fine del programma (punto di partenza MAIN)
