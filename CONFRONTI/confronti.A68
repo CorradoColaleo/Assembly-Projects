@@ -1,0 +1,31 @@
+			ORG				$8100
+MAIN			MOVE.B #5,D0
+			MOVE.B #5,D1
+
+			CMP.B D0,D1		
+			BEQ				OK1
+L1			MOVE.B #6,D1
+			CMP.B D0,D1		
+			BNE				OK2
+
+L2			CMP.B D0,D1
+			BGT				OK3
+
+L3			CMP.B D1,D0			
+			BLT				OK4
+
+			JMP				LOOP
+
+OK1			ADD.W #1,D2
+			JMP				L1
+		
+OK2			ADD.W #1,D2
+			JMP				L2
+
+OK3			ADD.W #1,D2
+			JMP				L3	
+
+OK4			ADD.W #1,D2		
+
+LOOP			JMP				LOOP
+			END				MAIN

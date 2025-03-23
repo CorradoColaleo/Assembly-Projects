@@ -1,0 +1,43 @@
+        ORG     $8100                ; Indirizzo iniziale del programma
+
+MAIN    MOVE.B  #5,D0                ; D0 = 5 (valore di riferimento)
+        MOVE.B  #5,D1                ; D1 = 5
+
+        CMP.B   D0,D1                ; Confronta D1 - D0 → 5 - 5 = 0 → Z=1
+        BEQ     OK1                  ; Salta perché Z=1 → D1 == D0 → vero
+
+; --------- OK1 è stato eseguito, quindi D2 = 1 ---------
+
+L1      MOVE.B  #6,D1                ; D1 = 6
+
+        CMP.B   D0,D1                ; Confronta D1 - D0 → 6 - 5 = +1 → Z=0, N=0
+        BNE     OK2                  ; Salta perché Z=0 → D1 ≠ D0 → vero
+
+; --------- OK2 è stato eseguito, quindi D2 = 2 ---------
+
+L2      CMP.B   D0,D1                ; Confronta D1 - D0 → 6 - 5 = +1 → Z=0, N=0
+        BGT     OK3                  ; Salta perché Z=0 e N=V → D1 > D0 → vero (in confronto con segno)
+
+; --------- OK3 è stato eseguito, quindi D2 = 3 ---------
+
+L3      CMP.B   D1,D0                ; Confronta D0 - D1 → 5 - 6 = -1 → Z=0, N=1
+        BLT     OK4                  ; Salta perché N ≠ V → D0 < D1 → vero (in confronto con segno)
+
+; --------- OK4 è stato eseguito, quindi D2 = 4 ---------
+
+        JMP     LOOP                 ; Entra nel loop infinito
+
+OK1     ADD.W   #1,D2                ; Incrementa D2 → D2 = 1
+        JMP     L1                   ; Va a L1
+
+OK2     ADD.W   #1,D2                ; Incrementa D2 → D2 = 2
+        JMP     L2                   ; Va a L2
+
+OK3     ADD.W   #1,D2                ; Incrementa D2 → D2 = 3
+        JMP     L3                   ; Va a L3
+
+OK4     ADD.W   #1,D2                ; Incrementa D2 → D2 = 4
+
+LOOP    JMP     LOOP                 ; Loop infinito finale
+
+        END     MAIN                 ; Fine del programma
