@@ -1,0 +1,108 @@
+00008200                                     1  BEGIN			ORG			$8200
+00008200  =00002000                          2  TERD			EQU			$2000
+00008200  =00002001                          3  TERC			EQU			$2001
+00008200  =00002004                          4  PIADA			EQU			$2004
+00008200  =00002005                          5  PIACA			EQU			$2005
+00008200  =00002006                          6  PIADB			EQU			$2006
+00008200  =00002007                          7  PIACB			EQU			$2007
+00008200  4EB9 00008220                      8  			JSR			DVAIN
+00008206  4EB9 00008234                      9  			JSR			DVBOUT
+0000820C  4EB9 00008248                     10  			JSR 			DVTER
+00008212  40C0                              11  			MOVE.W		SR,D0
+00008214  0240 D8FF                         12  			ANDI.W 		#$D8FF,D0
+00008218  46C0                              13  			MOVE.W		D0,SR			*Queste tre istruzioni mi servono per passare a stato utente e smascherare le interruzioni
+0000821A  4EF9 0000821A                     14  LOOP			JMP			LOOP
+00008220                                    15  
+00008220                                    16  
+00008220  11FC 0000 2005                    17  DVAIN			MOVE.B #0,PIACA				* Se scrivo nel PIADA, sto scrivendo nel registro direzione
+00008226  11FC 0000 2004                    18  			MOVE.B #$00,PIADA				* Setto le linee come linee di input
+0000822C  11FC 0025 2005                    19  			MOVE.B #%00100101,PIACA			* Interruzioni abilitate, prossima scrittura nel registro dati, CA2 basso dopo un'operazione di lettura e alto quando si alza CRA7
+00008232  4E75                              20  			RTS		
+00008234                                    21  
+00008234  11FC 0000 2007                    22  DVBOUT		MOVE.B #0,PIACB				* Se scrivo nel PIADB, sto scrivendo nel registro direzione
+0000823A  11FC 00FF 2006                    23  			MOVE.B #$FF,PIADB				* Setto le linee come linee di output
+00008240  11FC 0024 2007                    24  			MOVE.B #%00100100,PIACB			* Interruzioni abilitate, prossima scrittura nel registro dati, CB2 basso dopo un'operazione di scrittura e alto quando si alza CRB7
+00008246  4E75                              25  			RTS
+00008248                                    26  
+00008248  11FC 003F 2001                    27  DVTER			MOVE.B #$3F,TERC
+0000824E  4E75                              28  			RTS
+00008250                                    29  
+00008250                                    30  
+00008500                                    31  INIT			ORG			$8500
+00008500  2F08                              32  			MOVE.L A0,-(A7)
+00008502  2F09                              33  			MOVE.L A1,-(A7)
+00008504  2F0A                              34  			MOVE.L A2,-(A7)
+00008506  2F00                              35  			MOVE.L D0,-(A7)
+00008508  2F01                              36  			MOVE.L D1,-(A7)
+0000850A  207C 00002000                     37  			MOVEA.L #TERD,A0
+00008510  227C 00002006                     38  			MOVEA.L #PIADB,A1
+00008516  247C 00002007                     39  			MOVEA.L #PIACB,A2
+0000851C                                    40  
+0000851C  1010                              41  INPUT			MOVE.B (A0),D0				* Acquisisco il dato dal terminale
+0000851E  1211                              42  			MOVE.B (A1),D1				* Lettura fittizia
+00008520  1280                              43  			MOVE.B D0,(A1)				* Prendo il dato acquisito dal terminale e lo metto nel registro dato del porto B della PIA
+00008522                                    44  
+00008522  1212                              45  ciclo2			MOVE.B (A2),D1			
+00008524  0241 0080                         46  			ANDI.W #$80,D1
+00008528  67F8                              47  			BEQ			ciclo2
+0000852A                                    48  
+0000852A  B03C 000D                         49  			CMP.B			#13,D0			* Confronto il carattere in D0 con il carattere enter
+0000852E  66EC                              50  			BNE			INPUT
+00008530  0038 001C 2001                    51  			ORI.B			#$1C,TERC
+00008536  221F                              52  			MOVE.L (A7)+,D1
+00008538  201F                              53  			MOVE.L (A7)+,D0
+0000853A  245F                              54  			MOVE.L (A7)+,A2
+0000853C  225F                              55  			MOVE.L (A7)+,A1
+0000853E  205F                              56  			MOVE.L (A7)+,A0
+00008540  4E73                              57  			RTE
+00008542                                    58  
+00008600                                    59  INIT2			ORG			$8600
+00008600  2F08                              60  			MOVE.L A0,-(A7)
+00008602  2F09                              61  			MOVE.L A1,-(A7)
+00008604  2F0A                              62  			MOVE.L A2,-(A7)
+00008606  2F00                              63  			MOVE.L D0,-(A7)
+00008608  2F01                              64  			MOVE.L D1,-(A7)
+0000860A  2F02                              65  			MOVE.L D2,-(A7)
+0000860C  207C 00002000                     66  			MOVEA.L #TERD,A0
+00008612  227C 00002006                     67  			MOVEA.L #PIADB,A1
+00008618  247C 00002007                     68  			MOVEA.L #PIACB,A2
+0000861E  143C 00FF                         69  			MOVE.B #255,D2
+00008622                                    70  
+00008622  1010                              71  SWAP			MOVE.B (A0),D0				* Acquisisco il dato dal terminale
+00008624  1211                              72  			MOVE.B (A1),D1				* Lettura fittizia
+00008626  1280                              73  			MOVE.B D0,(A1)				* Prendo il dato acquisito dal terminale e lo metto nel registro dato del porto B della PIA
+00008628                                    74  
+00008628  1212                              75  ciclo3			MOVE.B (A2),D1			
+0000862A  0241 0080                         76  			ANDI.W #$80,D1
+0000862E  67F8                              77  			BEQ			ciclo3
+00008630                                    78  
+00008630  51CA FFF0                         79  			DBRA			D2,SWAP
+00008634  0038 001C 2001                    80  			ORI.B			#$1C,TERC
+0000863A  241F                              81  			MOVE.L (A7)+,D2
+0000863C  221F                              82  			MOVE.L (A7)+,D1
+0000863E  201F                              83  			MOVE.L (A7)+,D0
+00008640  245F                              84  			MOVE.L (A7)+,A2
+00008642  225F                              85  			MOVE.L (A7)+,A1
+00008644  205F                              86  			MOVE.L (A7)+,A0
+00008646  4E73                              87  			RTE
+00008648                                    88  
+00008648                                    89  
+00008700                                    90  			ORG			$8700
+00008700  0238 00E9 2001                    91  INIT3			ANDI.B			#%11101001,TERC	* Disabilita la tastiera, il cancella video e le interruzioni su enter
+00008706  2F09                              92  			MOVE.L A1,-(A7)
+00008708  2F08                              93  			MOVE.L A0,-(A7)
+0000870A  2F00                              94  			MOVE.L D0,-(A7)
+0000870C  207C 00002000                     95  			MOVEA.L #TERD,A0
+00008712  227C 00002004                     96  			MOVEA.L #PIADA,A1
+00008718  1091                              97  			MOVE.B (A1),(A0)
+0000871A  201F                              98  			MOVE.L (A7)+,D0
+0000871C  205F                              99  			MOVE.L (A7)+,A0
+0000871E  225F                             100  			MOVE.L (A7)+,A1
+00008720  0038 0012 2001                   101  			ORI.B	#$12,TERC
+00008726  4E73                             102  			RTE
+00008728                                   103  	
+00008728                                   104  
+00008728                                   105  			END			BEGIN
+
+No errors detected
+No warnings generated

@@ -1,0 +1,108 @@
+BEGIN			ORG			$8200
+TERD			EQU			$2000
+TERC			EQU			$2001
+PIADA			EQU			$2004
+PIACA			EQU			$2005
+PIADB			EQU			$2006
+PIACB			EQU			$2007
+			JSR			DVAIN
+			JSR			DVBOUT
+			JSR 			DVTER
+			MOVE.W		SR,D0
+			ANDI.W 		#$D8FF,D0
+			MOVE.W		D0,SR			*Queste tre istruzioni mi servono per passare a stato utente e smascherare le interruzioni
+LOOP			JMP			LOOP
+
+
+DVAIN			MOVE.B #0,PIACA				* Se scrivo nel PIADA, sto scrivendo nel registro direzione
+			MOVE.B #$00,PIADA				* Setto le linee come linee di input
+			MOVE.B #%00100101,PIACA			* Interruzioni abilitate, prossima scrittura nel registro dati, CA2 basso dopo un'operazione di lettura e alto quando si alza CRA7
+			RTS		
+
+DVBOUT		MOVE.B #0,PIACB				* Se scrivo nel PIADB, sto scrivendo nel registro direzione
+			MOVE.B #$FF,PIADB				* Setto le linee come linee di output
+			MOVE.B #%00100100,PIACB			* Interruzioni abilitate, prossima scrittura nel registro dati, CB2 basso dopo un'operazione di scrittura e alto quando si alza CRB7
+			RTS
+
+DVTER			MOVE.B #$3F,TERC
+			RTS
+
+
+INIT			ORG			$8500
+			MOVE.L A0,-(A7)
+			MOVE.L A1,-(A7)
+			MOVE.L A2,-(A7)
+			MOVE.L D0,-(A7)
+			MOVE.L D1,-(A7)
+			MOVEA.L #TERD,A0
+			MOVEA.L #PIADB,A1
+			MOVEA.L #PIACB,A2
+
+INPUT			MOVE.B (A0),D0				* Acquisisco il dato dal terminale
+			MOVE.B (A1),D1				* Lettura fittizia
+			MOVE.B D0,(A1)				* Prendo il dato acquisito dal terminale e lo metto nel registro dato del porto B della PIA
+
+ciclo2			MOVE.B (A2),D1			
+			ANDI.W #$80,D1
+			BEQ			ciclo2
+
+			CMP.B			#13,D0			* Confronto il carattere in D0 con il carattere enter
+			BNE			INPUT
+			ORI.B			#$1C,TERC
+			MOVE.L (A7)+,D1
+			MOVE.L (A7)+,D0
+			MOVE.L (A7)+,A2
+			MOVE.L (A7)+,A1
+			MOVE.L (A7)+,A0
+			RTE
+
+INIT2			ORG			$8600
+			MOVE.L A0,-(A7)
+			MOVE.L A1,-(A7)
+			MOVE.L A2,-(A7)
+			MOVE.L D0,-(A7)
+			MOVE.L D1,-(A7)
+			MOVE.L D2,-(A7)
+			MOVEA.L #TERD,A0
+			MOVEA.L #PIADB,A1
+			MOVEA.L #PIACB,A2
+			MOVE.B #255,D2
+
+SWAP			MOVE.B (A0),D0				* Acquisisco il dato dal terminale
+			MOVE.B (A1),D1				* Lettura fittizia
+			MOVE.B D0,(A1)				* Prendo il dato acquisito dal terminale e lo metto nel registro dato del porto B della PIA
+
+ciclo3			MOVE.B (A2),D1			
+			ANDI.W #$80,D1
+			BEQ			ciclo3
+
+			DBRA			D2,SWAP
+			ORI.B			#$1C,TERC
+			MOVE.L (A7)+,D2
+			MOVE.L (A7)+,D1
+			MOVE.L (A7)+,D0
+			MOVE.L (A7)+,A2
+			MOVE.L (A7)+,A1
+			MOVE.L (A7)+,A0
+			RTE
+
+
+			ORG			$8700
+INIT3			ANDI.B			#%11101001,TERC	* Disabilita la tastiera, il cancella video e le interruzioni su enter
+			MOVE.L A1,-(A7)
+			MOVE.L A0,-(A7)
+			MOVE.L D0,-(A7)
+			MOVEA.L #TERD,A0
+			MOVEA.L #PIADA,A1
+			MOVE.B (A1),(A0)
+			MOVE.L (A7)+,D0
+			MOVE.L (A7)+,A0
+			MOVE.L (A7)+,A1
+			ORI.B	#$12,TERC
+			RTE
+	
+
+			END			BEGIN
+
+
+
